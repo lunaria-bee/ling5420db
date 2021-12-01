@@ -72,7 +72,7 @@ class Example(BaseModel):
     '''Note related to the example.'''
 
 
-# relation Tables #
+# Relation Tables #
 
 class TagRelation(BaseModel):
     '''Indicates a tag on a note.'''
