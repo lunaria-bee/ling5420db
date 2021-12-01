@@ -83,7 +83,7 @@ class TagRelation(BaseModel):
 
 def _init():
     '''Initialize the database.'''
-    _db.create_tables([Language, Note, Tag, Example, TagRelation, ExampleRelation])
+    _db.create_tables([Language, Note, Tag, Example, TagRelation])
 
     Language(name="English").save()
     Language(name="French").save()
