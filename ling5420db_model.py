@@ -1,3 +1,4 @@
+import os
 from peewee import *
 
 
@@ -79,3 +80,28 @@ class ExampleRelation(BaseModel):
     class Meta:
         # Require each example-note pair to be unique.
         indexes = ( (('example', 'note'), True), )
+
+
+# Initialization #
+
+def _init():
+    '''Initialize the database.'''
+    _db.create_tables([Language, Note, Tag, Example, TagRelation, ExampleRelation])
+
+    Language(name="English").save()
+    Language(name="French").save()
+    Language(name="Hawai'ian").save()
+    Language(name="Southern Sierra Miwok").save()
+    Language(name="Coast Miwok").save()
+
+
+def open_():
+    '''Open a connection to the database.'''
+    is_initialized = os.path.isfile(DB_PATH)
+    _db.connect()
+    if not is_initialized: _init()
+
+
+def close():
+    '''Close the database connection.'''
+    _db.close()
