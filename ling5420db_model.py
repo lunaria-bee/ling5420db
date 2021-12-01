@@ -43,10 +43,18 @@ class Example(BaseModel):
     '''Example of a feature in a language.'''
 
     original = TextField()
-    '''Original text of the example utterance.'''
+    '''Original text of the example utterance.
+
+    TODO explain alignment with gloss
+
+    '''
 
     gloss = TextField()
-    '''Gloss of the utterance.'''
+    '''Gloss of the utterance.
+
+    TODO explain alignment with gloss
+
+    '''
 
     translation = TextField()
     '''Translation of the utterance.'''
