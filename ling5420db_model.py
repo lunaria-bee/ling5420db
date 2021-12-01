@@ -1,11 +1,12 @@
 from peewee import *
 
 
-_db = SqliteDatabase('ling5420db.sqlite')
+DB_PATH = 'ling5420db.sqlite'
+_db = SqliteDatabase(DB_PATH)
 
 
 class BaseModel(Model):
-    '''Base class for database table models'''
+    '''Base class for database table models.'''
 
     class Meta:
         database = _db
@@ -14,59 +15,67 @@ class BaseModel(Model):
 # Data Tables #
 
 class Language(BaseModel):
-    '''Language that was studied in class'''
+    '''Language that was studied in class.'''
 
-    name = CharField()
-    '''The name of the language'''
+    name = CharField(unique=True)
+    '''The name of the language.'''
 
 
 class Note(BaseModel):
-    '''Note on a feature of a language'''
+    '''Note on a feature of a language.'''
 
     text = TextField()
-    '''Text of the note'''
+    '''Text of the note.'''
 
-    language = ForeignkeyField(Language, backref='notes')
-    '''The language '''
+    language = ForeignKeyField(Language, backref='notes')
+    '''The language .'''
 
 
 class Tag(BaseModel):
-    '''Tag describing a cross-linguistic feature'''
+    '''Tag describing a cross-linguistic feature.'''
 
-    text = TextField()
-    '''Text of the tag'''
+    name = CharField(unique=True)
+    '''Text of the tag.'''
 
 
 class Example(BaseModel):
-    '''Example of a feature in a language'''
+    '''Example of a feature in a language.'''
 
     text = TextField()
-    '''Original text of the example utterance'''
+    '''Original text of the example utterance.'''
 
     gloss = TextField()
-    '''Gloss of the utterance'''
+    '''Gloss of the utterance.'''
 
     translation = TextField()
-    '''Translation of the utterance'''
+    '''Translation of the utterance.'''
 
 
-# Relation Tables #
+# relation Tables #
 
 class TagRelation(BaseModel):
-    '''Indicates a tag on a note'''
+    '''Indicates a tag on a note.'''
 
-    tag = ForeignKey(Tag, backref='note_links')
-    '''Tag to relate'''
+    tag = ForeignKeyField(Tag, backref='note_links')
+    '''Tag to relate.'''
 
-    note = ForeignKey(Note, backref='tag_links')
-    '''Note to relate'''
+    note = ForeignKeyField(Note, backref='tag_links')
+    '''Note to relate.'''
+
+    class Meta:
+        # Require each tag-note pair to be unique.
+        indexes = ( (('tag', 'note'), True), )
 
 
 class ExampleRelation(BaseModel):
-    '''Indicates an example for a note'''
+    '''Indicates an example for a note.'''
 
-    example = ForeignKey(Example, backref='note_links')
-    '''Example to relate'''
+    example = ForeignKeyField(Example, backref='note_links')
+    '''Example to relate.'''
 
-    note = ForeignKey(Note, backref='example_links')
-    '''Note to relate'''
+    note = ForeignKeyField(Note, backref='example_links')
+    '''Note to relate.'''
+
+    class Meta:
+        # Require each example-note pair to be unique.
+        indexes = ( (('example', 'note'), True), )
