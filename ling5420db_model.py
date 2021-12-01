@@ -59,6 +59,9 @@ class Example(BaseModel):
     translation = TextField()
     '''Translation of the utterance.'''
 
+    note = ForeignKeyField(Note, backref='examples')
+    '''Note related to the example.'''
+
 
 # relation Tables #
 
@@ -74,20 +77,6 @@ class TagRelation(BaseModel):
     class Meta:
         # Require each tag-note pair to be unique.
         indexes = ( (('tag', 'note'), True), )
-
-
-class ExampleRelation(BaseModel):
-    '''Indicates an example for a note.'''
-
-    example = ForeignKeyField(Example, backref='note_links')
-    '''Example to relate.'''
-
-    note = ForeignKeyField(Note, backref='example_links')
-    '''Note to relate.'''
-
-    class Meta:
-        # Require each example-note pair to be unique.
-        indexes = ( (('example', 'note'), True), )
 
 
 # Initialization #
