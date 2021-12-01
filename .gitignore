@@ -3,3 +3,6 @@
 
 # sqlite DB files
 *.sqlite
+
+# pycache
+__pycache__/
