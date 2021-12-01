@@ -42,7 +42,7 @@ class Tag(BaseModel):
 class Example(BaseModel):
     '''Example of a feature in a language.'''
 
-    text = TextField()
+    original = TextField()
     '''Original text of the example utterance.'''
 
     gloss = TextField()
