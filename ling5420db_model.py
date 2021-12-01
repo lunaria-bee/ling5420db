@@ -19,7 +19,7 @@ class Language(BaseModel):
     '''Language that was studied in class.'''
 
     name = CharField(unique=True)
-    '''The name of the language.'''
+    '''Name of the language.'''
 
 
 class Note(BaseModel):
@@ -29,7 +29,7 @@ class Note(BaseModel):
     '''Text of the note.'''
 
     language = ForeignKeyField(Language, backref='notes')
-    '''The language .'''
+    '''Language the note describes.'''
 
 
 class Tag(BaseModel):
