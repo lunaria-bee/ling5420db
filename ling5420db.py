@@ -7,65 +7,68 @@ _db = SqliteDatabase('ling5420db.sqlite')
 
 
 class BaseModel(Model):
-    '''TODO'''
+    '''Base class for database table models'''
 
     class Meta:
         database = _db
 
 
 # Data Tables #
+
 class Language(BaseModel):
-    '''TODO'''
+    '''Language that was studied in class'''
 
     name = CharField()
-    '''TODO'''
+    '''The name of the language'''
 
 
 class Note(BaseModel):
-    '''TODO'''
+    '''Note on a feature of a language'''
 
     text = TextField()
-    '''TODO'''
+    '''Text of the note'''
 
     language = ForeignkeyField(Language, backref='notes')
-    '''TODO'''
+    '''The language '''
 
 
 class Tag(BaseModel):
-    '''TODO'''
+    '''Tag describing a cross-linguistic feature'''
 
     text = TextField()
-    '''TODO'''
+    '''Text of the tag'''
 
 
 class Example(BaseModel):
-    '''TODO'''
+    '''Example of a feature in a language'''
 
     text = TextField()
-    '''TODO'''
+    '''Original text of the example utterance'''
 
     gloss = TextField()
-    '''TODO'''
+    '''Gloss of the utterance'''
 
     translation = TextField()
-    '''TODO'''
+    '''Translation of the utterance'''
 
 
 # Relation Tables #
+
 class TagRelation(BaseModel):
-    '''TODO'''
+    '''Indicates a tag on a note'''
 
     tag = ForeignKey(Tag, backref='note_links')
-    '''TODO'''
+    '''Tag to relate'''
 
     note = ForeignKey(Note, backref='tag_links')
+    '''Note to relate'''
 
 
 class ExampleRelation(BaseModel):
-    '''TODO'''
+    '''Indicates an example for a note'''
 
     example = ForeignKey(Example, backref='note_links')
-    '''TODO'''
+    '''Example to relate'''
 
     note = ForeignKey(Note, backref='example_links')
-    '''TODO'''
+    '''Note to relate'''
