@@ -31,6 +31,15 @@ class Note(BaseModel):
     language = ForeignKeyField(Language, backref='notes')
     '''Language the note describes.'''
 
+    @property
+    def tags(self):
+        return (
+            Tag
+            .select()
+            .join(TagRelation)
+            .where(TagRelation.note == self)
+        )
+
 
 class Tag(BaseModel):
     '''Tag describing a cross-linguistic feature.'''
