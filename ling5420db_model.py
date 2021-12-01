@@ -52,7 +52,7 @@ class Example(BaseModel):
     gloss = TextField()
     '''Gloss of the utterance.
 
-    TODO explain alignment with gloss
+    TODO explain alignment with original
 
     '''
 
