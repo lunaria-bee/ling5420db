@@ -3,6 +3,74 @@
 import ling5420db_model as db
 
 
+def query_and_print(
+        language=None,
+        tags=(),
+        show_examples=True,
+        examples_per_note=0,
+        show_tags=True,
+):
+    '''Query the database and print the results.'''
+
+    note_query = db.Note.select()
+
+    if not language is None:
+        note_query = (
+            note_query
+            .switch(db.Note)
+            .join(db.Language)
+            .where(db.Language.name == language)
+        )
+
+    for t in tags:
+        note_query = (
+            note_query
+            .switch(db.Note)
+            .join(db.TagRelation)
+            .join(db.Tag)
+            .where(db.Tag.name == t)
+        )
+
+    for note in note_query:
+        print()
+        print(f"Note {note.id}: {note.language.name}", end="")
+
+        if show_tags:
+            tag_query = (
+                db.Tag
+                .select()
+                .join(db.TagRelation)
+                .join(db.Note)
+                .where(db.Note.id == note.id)
+                .order_by(db.Tag.name)
+            )
+            print(" (" + ", ".join(t.name for t in tag_query) + ")")
+        else:
+            print()
+
+        print()
+        print(" ", note.text)
+
+        if show_examples:
+            example_query = (
+                db.Example
+                .select()
+                .join(db.Note)
+                .where(db.Note.id == note.id)
+            )
+
+            if examples_per_note > 0:
+                example_query = example_query.limit(examples_per_note)
+
+            for e in example_query:
+                print()
+                print(" ", '\t'.join(e.original.split()))
+                print(" ", '\t'.join(e.gloss.split()))
+                print(" ", e.translation)
+
+    print()
+
+
 def interactive_add_note():
     '''Interactively add a note, with tags and examples.'''
 
