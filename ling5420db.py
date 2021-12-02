@@ -48,6 +48,13 @@ parser.add_argument(
     set.
     ''',
 )
+parser.add_argument(
+    '-H', '--disable-error-helper',
+    action='store_true',
+    help='''
+    Do not try to identify user errors in the event of a failed query.
+    ''',
+)
 
 
 def query_and_print(
@@ -56,6 +63,7 @@ def query_and_print(
         hide_tags=False,
         hide_examples=False,
         max_examples=None,
+        disable_error_helper=False,
 ):
     '''Query the database and print the results.'''
 
@@ -69,7 +77,7 @@ def query_and_print(
             .where(db.Language.name == language)
         )
 
-    for t in tags:
+    for t in tags: # TODO fix for multiple tags
         note_query = (
             note_query
             .switch(db.Note)
@@ -78,6 +86,7 @@ def query_and_print(
             .where(db.Tag.name == t)
         )
 
+    # Print results
     for note in note_query:
         print()
         print(f"Note {note.id}: {note.language.name}", end="")
@@ -114,6 +123,19 @@ def query_and_print(
                 print(" ", '\t'.join(e.original.split()))
                 print(" ", '\t'.join(e.gloss.split()))
                 print(" ", e.translation)
+
+    # Error helper for empty queries
+    if len(note_query) == 0 and not disable_error_helper:
+        if not language is None:
+            if db.Language.get_or_none(name=language) is None:
+                print(f"\nLanguage '{language}' not found in database.")
+
+            elif not db.Note.select().join(db.Language).where(db.Language.name==language):
+                print(f"\nNo notes associated with {language} in database.")
+
+        elif (not tags is None) and all(db.Tag.get_or_none(name=t) is None for t in tags):
+            taglist = ', '.join("'" + t + "'" for t in tags)
+            print(f"\nNo such tag(s) {taglist} in database.")
 
     print()
 
