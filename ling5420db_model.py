@@ -94,12 +94,6 @@ def _init():
     '''Initialize the database.'''
     _db.create_tables([Language, Note, Tag, Example, TagRelation])
 
-    Language(name="English").save()
-    Language(name="French").save()
-    Language(name="Hawai'ian").save()
-    Language(name="Southern Sierra Miwok").save()
-    Language(name="Coast Miwok").save()
-
 
 def open_():
     '''Open a connection to the database.'''
