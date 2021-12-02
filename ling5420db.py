@@ -5,35 +5,57 @@ import ling5420db_model as db
 import argparse, sys
 
 
-parser = argparse.ArgumentParser(description
-                                 = "Query a database of LING 5420 notes and examples"
-                                 + " with a few simple qualifiers.")
-
-parser.add_argument('-l', '--language',
-                    help="Select notes by language. May be used alone or in conjunction"
-                    + " with --tags.")
-
-parser.add_argument('-t', '--tags', action='extend', nargs='+', default=[], type=str,
-                    help="Select notes by tag(s0. May be used alone or in conjunction"
-                    + " with --language.")
-
-parser.add_argument('-E', '--hide-examples', action='store_true',
-                    help="Do not show examples for selected notes.")
-
-parser.add_argument('-m', '--max-examples', type=int,
-                    help="Maximum number of examples to show. Does nothing if"
-                    + " --hide-examples is set.")
-
-parser.add_argument('-T', '--hide-tags', action='store_true',
-                    help="Do not show tags for selected notes.")
+parser = argparse.ArgumentParser(
+    description='''
+    Query a database of LING 5420 notes and examples.
+    ''',
+)
+parser.add_argument(
+    '-l', '--language',
+    help='''
+    Select notes by language. May be used alone or in conjunction with --tags.
+    ''',
+)
+parser.add_argument(
+    '-t', '--tags',
+    action='extend',
+    nargs='+',
+    default=[],
+    type=str,
+    help='''
+    Select notes by tag(s). May be used alone or in conjunction with --language.
+    ''',
+)
+parser.add_argument(
+    '-T', '--hide-tags',
+    action='store_true',
+    help='''
+    Do not show tags for selected notes.
+    ''',
+)
+parser.add_argument(
+    '-E', '--hide-examples',
+    action='store_true',
+    help='''
+    Do not show examples for selected notes.
+    ''',
+)
+parser.add_argument(
+    '-m', '--max-examples',
+    type=int,
+    help='''
+    Maximum number of examples to show for each note. Does nothing if --hide-examples is
+    set.
+    ''',
+)
 
 
 def query_and_print(
         language=None,
         tags=[],
+        hide_tags=False,
         hide_examples=False,
         max_examples=None,
-        hide_tags=False,
 ):
     '''Query the database and print the results.'''
 
@@ -160,4 +182,7 @@ def interactive_add_multiple_notes():
 
 if __name__ == '__main__':
     args = parser.parse_args(sys.argv[1:])
+
+    db.open_()
     query_and_print(**vars(args))
+    db.close()
