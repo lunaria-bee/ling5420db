@@ -2,13 +2,38 @@
 
 import ling5420db_model as db
 
+import argparse, sys
+
+
+parser = argparse.ArgumentParser(description
+                                 = "Query a database of LING 5420 notes and examples"
+                                 + " with a few simple qualifiers.")
+
+parser.add_argument('-l', '--language',
+                    help="Select notes by language. May be used alone or in conjunction"
+                    + " with --tags.")
+
+parser.add_argument('-t', '--tags', action='extend', nargs='+', default=[], type=str,
+                    help="Select notes by tag(s0. May be used alone or in conjunction"
+                    + " with --language.")
+
+parser.add_argument('-E', '--hide-examples', action='store_true',
+                    help="Do not show examples for selected notes.")
+
+parser.add_argument('-m', '--max-examples', type=int,
+                    help="Maximum number of examples to show. Does nothing if"
+                    + " --hide-examples is set.")
+
+parser.add_argument('-T', '--hide-tags', action='store_true',
+                    help="Do not show tags for selected notes.")
+
 
 def query_and_print(
         language=None,
-        tags=(),
-        show_examples=True,
-        examples_per_note=0,
-        show_tags=True,
+        tags=[],
+        hide_examples=False,
+        max_examples=None,
+        hide_tags=False,
 ):
     '''Query the database and print the results.'''
 
@@ -35,7 +60,7 @@ def query_and_print(
         print()
         print(f"Note {note.id}: {note.language.name}", end="")
 
-        if show_tags:
+        if not hide_tags:
             tag_query = (
                 db.Tag
                 .select()
@@ -51,7 +76,7 @@ def query_and_print(
         print()
         print(" ", note.text)
 
-        if show_examples:
+        if not hide_examples:
             example_query = (
                 db.Example
                 .select()
@@ -59,8 +84,8 @@ def query_and_print(
                 .where(db.Note.id == note.id)
             )
 
-            if examples_per_note > 0:
-                example_query = example_query.limit(examples_per_note)
+            if not max_examples is None:
+                example_query = example_query.limit(max_examples)
 
             for e in example_query:
                 print()
@@ -131,3 +156,8 @@ def interactive_add_multiple_notes():
         interactive_add_note()
         print()
         add_another_note = bool(input("Add another note? (y/n): ").lower() == 'y')
+
+
+if __name__ == '__main__':
+    args = parser.parse_args(sys.argv[1:])
+    query_and_print(**vars(args))
