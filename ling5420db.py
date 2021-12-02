@@ -4,6 +4,8 @@ import ling5420db_model as db
 
 
 def interactive_add_note():
+    '''Interactively add a note, with tags and examples.'''
+
     # Get note language
     is_language_valid = False
     while not is_language_valid:
@@ -39,7 +41,7 @@ def interactive_add_note():
             gloss=example_gloss,
             translation=example_translation,
             note=note,
-        )
+        ).save()
 
         add_example = bool(input("Add another exaxmple? (y/n): ").lower() == 'y')
 
@@ -55,8 +57,9 @@ def interactive_add_note():
 
 
 def interactive_add_multiple_notes():
+    '''Interactively add an arbitrary number of notes.'''
     add_another_note = True
     while add_another_note:
-        add_note()
+        interactive_add_note()
         print()
         add_another_note = bool(input("Add another note? (y/n): ").lower() == 'y')
