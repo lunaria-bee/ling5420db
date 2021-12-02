@@ -11,9 +11,9 @@ Build and query a database of notes and examples from LING 5420.
 
 ### As a command-line utility
 
-ling5420db.py can be run as a script from the command line (`$ ./ling5420.py` or `$ python
-ling5420db.py`). When used in this mode, the program may only be used to make selection
-queries. See the built-in help (`$ ./ling5420.py -h`) for details.
+ling5420db.py can be run as a script from the command line (`$ ./ling5420db.py` or `$
+python ling5420db.py`). When used in this mode, the program may only be used to make
+selection queries. See the built-in help (`$ ./ling5420db.py -h`) for details.
 
 ### Interactively in Python
 
