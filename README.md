@@ -29,6 +29,6 @@ More functionality is available by running ling5420db.py in Python's iteractive 
 See function parameter lists and docstrings for more usage information.
 
 If you're familiar with basic database concepts, it's fairly easy to [write your own
-queries in Peewee](docs.peewee-orm.com/en/latest/peewee/querying.html). Peewee also has
-some [additional helpers for interactive
-use](http://docs.peewee-orm.com/en/latest/peewee/interactive.html).
+queries in Peewee](https://docs.peewee-orm.com/en/latest/peewee/querying.html). Peewee
+also has some [additional helpers for interactive
+use](https://docs.peewee-orm.com/en/latest/peewee/interactive.html).
