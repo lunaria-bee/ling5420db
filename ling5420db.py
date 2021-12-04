@@ -77,13 +77,16 @@ def query_and_print(
             .where(db.Language.name == language)
         )
 
-    for t in tags: # TODO fix for multiple tags
+    for t in tags: # TODO there has got to be a better way to do this
         note_query = (
             note_query
-            .switch(db.Note)
-            .join(db.TagRelation)
-            .join(db.Tag)
-            .where(db.Tag.name == t)
+            .intersect(
+                db.Note
+                .select()
+                .join(db.TagRelation)
+                .join(db.Tag)
+                .where(db.Tag.name == t)
+            )
         )
 
     # Print results
