@@ -136,7 +136,7 @@ def query_and_print(
             elif not db.Note.select().join(db.Language).where(db.Language.name==language):
                 print(f"\nNo notes associated with {language} in database.")
 
-        elif (not tags is None) and all(db.Tag.get_or_none(name=t) is None for t in tags):
+        elif (not tags == []) and all(db.Tag.get_or_none(name=t) is None for t in tags):
             taglist = ', '.join("'" + t + "'" for t in tags)
             print(f"\nNo such tag(s) {taglist} in database.")
 
