@@ -2,7 +2,8 @@
 
 import ling5420db_model as db
 
-import argparse, sys
+import argparse, shutil, sys, textwrap
+from functools import partial
 
 
 parser = argparse.ArgumentParser(
@@ -57,6 +58,42 @@ parser.add_argument(
 )
 
 
+def align_paired_strings(width, word_list_1, word_list_2):
+    '''Construct new strings to align strings from a pair of lists.
+
+    word_list_1 and word_list_2 *must* have the same length.
+
+    Parameters
+    width: Maximum width of each line.
+    word_list_1: List of strings to align.
+    word_list_2: List of strings to align.
+
+    Return: List of pairs of strings. Each pair is itself structured as a list, where the
+            first element is a row of the string constructed from word_list_1, and the
+            second element is a row of the string constructed from word_list_2.
+
+    '''
+    if len(word_list_1) != len(word_list_2):
+        raise ueError(f"Arguments s1 and s2 have non-matching word counts "
+                         + f"({len(word_list_1)} and {len(word_list_2)} respectively).)")
+
+    remaining_available_width = width
+    paired_rows = [["", ""]]
+    for w1, w2 in zip(word_list_1, word_list_2):
+
+        width_to_fill = max(len(w1), len(w2)) + 2
+
+        if remaining_available_width < width_to_fill:
+            paired_rows.append(("", ""))
+            remaining_available_width = width
+
+        paired_rows[-1][0] += f"{w1:{width_to_fill}}"
+        paired_rows[-1][1] += f"{w2:{width_to_fill}}"
+        remaining_available_width -= width_to_fill
+
+    return paired_rows
+
+
 def query_and_print(
         language=None,
         tags=[],
@@ -90,10 +127,19 @@ def query_and_print(
         )
 
     # Print results
+    terminal_width = shutil.get_terminal_size().columns
+    std_fill = partial(
+        textwrap.fill,
+        initial_indent="  ",
+        subsequent_indent="  ",
+        width=terminal_width-2,
+    )
+
     for note in note_query:
         print()
         print(f"Note {note.id}: {note.language.name}", end="")
 
+        # Print tags (if applicable)
         if not hide_tags:
             tag_query = (
                 db.Tag
@@ -103,13 +149,24 @@ def query_and_print(
                 .where(db.Note.id == note.id)
                 .order_by(db.Tag.name)
             )
-            print(" (" + ", ".join(t.name for t in tag_query) + ")")
+            if tag_query:
+                tag_str = " (" + ", ".join(t.name for t in tag_query) + ")"
+                header_len = len(f"Note {note.id}: {note.language.name}")
+                print(
+                    textwrap.fill(
+                        tag_str,
+                        subsequent_indent=" "*header_len,
+                        width=terminal_width-2,
+                    )
+                )
         else:
             print()
 
+        # Print note
         print()
-        print(" ", note.text)
+        print(std_fill(note.text))
 
+        # Print examples (if applicable)
         if not hide_examples:
             example_query = (
                 db.Example
@@ -122,10 +179,36 @@ def query_and_print(
                 example_query = example_query.limit(max_examples)
 
             for e in example_query:
-                print()
-                print(" ", '\t'.join(e.original.split()))
-                print(" ", '\t'.join(e.gloss.split()))
-                print(" ", e.translation)
+
+                newline_before_translation = False
+
+                # Print original and/or gloss
+                if e.original and e.gloss:
+                    aligned_pairs = align_paired_strings(
+                        terminal_width - 4,
+                        e.original.split(),
+                        e.gloss.split(),
+                    )
+                    for row_pair in aligned_pairs:
+                        print()
+                        print(" ", row_pair[0])
+                        print(" ", row_pair[1])
+                    if len(aligned_pairs) > 1:
+                        newline_before_translation = True
+
+                elif e.original:
+                    print()
+                    print(std_fill(" ".join(e.original.split())))
+
+                elif e.gloss:
+                    print()
+                    print(std_fill(" ".join(e.gloss.split())))
+
+                # Print translation
+                if e.translation:
+                    if newline_before_translation: print()
+                    print(std_fill(e.translation))
+
 
     # Error helper for empty queries
     if len(note_query) == 0 and not disable_error_helper:
