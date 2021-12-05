@@ -291,7 +291,6 @@ def interactive_add_multiple_notes():
 if __name__ == '__main__':
     args = parser.parse_args(sys.argv[1:])
 
-    if args.language or args.tags:
-        db.open_()
-        query_and_print(**vars(args))
-        db.close()
+    db.open_()
+    query_and_print(**vars(args))
+    db.close()
